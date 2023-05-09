@@ -1,7 +1,7 @@
 /*Точка маршрута*/
 
-import {createElement} from '../render.js';
 import {humanizeDate, getTimeDiff} from '../util.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 const EVENT_DATE = 'MMM DD';
@@ -66,26 +66,30 @@ function createWaypointTemplate(destination, waypoint, offers) {
   );
 }
 
-export default class WaypointView {
-  constructor({destination, waypoint, offers}) {
-    this.destination = destination;
-    this.waypoint = waypoint;
-    this.offers = offers;
+export default class WaypointView extends AbstractView {
+  #handleEditClick = null;
+  #destination = null;
+  #waypoint = null;
+  #offers = null;
+
+  constructor({onEditClick, destination, waypoint, offers}) {
+    super();
+    this.#handleEditClick = onEditClick;
+    this.#destination = destination;
+    this.#waypoint = waypoint;
+    this.#offers = offers;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createWaypointTemplate(this.destination, this.waypoint, this.offers);
+  get template() {
+    return createWaypointTemplate(this.#destination, this.#waypoint, this.#offers);
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  };
 }
