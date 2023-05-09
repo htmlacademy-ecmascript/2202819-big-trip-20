@@ -3,17 +3,6 @@
 import {DESCRIPTIONS} from '../const.js';
 import {getRandomArrayElement} from '../util.js';
 
-const DEFAULT_WAYPOINT = {
-  id: '',
-  basePrice: 0,
-  dateFrom: '',
-  dateTo: '',
-  destination: '',
-  isFavorite: false,
-  offers: [],
-  type: '',
-};
-
 const mockWaypoints = [
   {
     id: 1,
@@ -351,4 +340,4 @@ function getRandomWaypoint() {
   return getRandomArrayElement(mockWaypoints);
 }
 
-export {DEFAULT_WAYPOINT, mockDestinations, mockOffers, getRandomWaypoint};
+export {mockDestinations, mockOffers, getRandomWaypoint};

@@ -1,6 +1,6 @@
 /*Список точек маршрута*/
 
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createWaypointsListTemplate() {
   return (
@@ -8,20 +8,8 @@ function createWaypointsListTemplate() {
   );
 }
 
-export default class WaypointsListView {
-  getTemplate() {
+export default class WaypointsListView extends AbstractView {
+  get template() {
     return createWaypointsListTemplate();
-  }
-
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

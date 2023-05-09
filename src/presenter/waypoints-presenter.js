@@ -1,57 +1,88 @@
 /*Презентер для отрисовки компонентов*/
 
-import {render} from '../render.js';
-import {DEFAULT_WAYPOINT} from '../mock/waypoint-mock.js';
+import {render, replace} from '../framework/render.js';
 import WaypointView from '../view/waypoint-view.js';
 import WaypointFormView from '../view/waypoint-form-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 
 export default class WaypointsListPresenter {
-  waypointsListComponent = new WaypointsListView();
+  #waypointsListContainer = null;
+  #destinationsModel = null;
+  #waypointsModel = null;
+  #offersModel = null;
+
+  #waypointsListComponent = new WaypointsListView();
+
+  #waypointsListWaypoints = [];
 
   constructor({waypointsListContainer, destinationsModel, waypointsModel, offersModel}) {
-    this.waypointsListContainer = waypointsListContainer;
-    this.destinationsModel = destinationsModel;
-    this.waypointsModel = waypointsModel;
-    this.offersModel = offersModel;
+    this.#waypointsListContainer = waypointsListContainer;
+    this.#destinationsModel = destinationsModel;
+    this.#waypointsModel = waypointsModel;
+    this.#offersModel = offersModel;
   }
 
   init() {
-    this.waypointsListWaypoints = [...this.waypointsModel.getWaypoints()];
+    this.#waypointsListWaypoints = [...this.#waypointsModel.waypoints];
 
-    render(this.waypointsListComponent, this.waypointsListContainer);
+    this.#renderWaypointsList();
+  }
 
-    const destinationId = this.waypointsListWaypoints[0].destination;
-    const offersType = this.waypointsListWaypoints[0].type;
+  #renderWaypoint(destination, waypoint, offers) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
 
-    render(new WaypointFormView({
-      destination: this.destinationsModel.getById(destinationId),
-      waypoint: this.waypointsListWaypoints[0],
-      offers: this.offersModel.getByType(offersType),
-    }),
-    this.waypointsListComponent.getElement());
+    const waypointComponent = new WaypointView({
+      onEditClick: () => {
+        replaceWaypointToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      },
+      destination,
+      waypoint,
+      offers});
 
-    const defaultId = DEFAULT_WAYPOINT.destination;
-    const defaultType = DEFAULT_WAYPOINT.type;
+    const waypointFormComponent = new WaypointFormView({
+      onFormSubmit: () => {
+        replaceFormToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onFormCancel: () => {
+        replaceFormToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      destination,
+      waypoint,
+      offers});
 
-    render(new WaypointFormView({
-      destination: this.destinationsModel.getById(defaultId),
-      waypoint: DEFAULT_WAYPOINT,
-      offers: this.offersModel.getByType(defaultType),
-    }),
-    this.waypointsListComponent.getElement());
+    function replaceWaypointToForm() {
+      replace(waypointFormComponent, waypointComponent);
+    }
 
-    for (let i = 1; i < this.waypointsListWaypoints.length; i++) {
-      const id = this.waypointsListWaypoints[i].destination;
-      const offers = this.waypointsListWaypoints[i].offers;
-      const type = this.waypointsListWaypoints[i].type;
+    function replaceFormToWaypoint() {
+      replace(waypointComponent, waypointFormComponent);
+    }
 
-      render(new WaypointView({
-        destination: this.destinationsModel.getById(id),
-        waypoint: this.waypointsListWaypoints[i],
-        offers: this.offersModel.getById(type, offers),
-      }),
-      this.waypointsListComponent.getElement());
+    render(waypointComponent, this.#waypointsListComponent.element);
+  }
+
+  #renderWaypointsList() {
+    render(this.#waypointsListComponent, this.#waypointsListContainer);
+
+    for (let i = 0; i < this.#waypointsListWaypoints.length; i++) {
+      const id = this.#waypointsListWaypoints[i].destination;
+      const offers = this.#waypointsListWaypoints[i].offers;
+      const type = this.#waypointsListWaypoints[i].type;
+
+      this.#renderWaypoint(
+        this.#destinationsModel.getById(id),
+        this.#waypointsListWaypoints[i],
+        this.#offersModel.getById(type, offers),
+      );
     }
   }
 }

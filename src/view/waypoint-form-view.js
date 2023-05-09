@@ -1,8 +1,8 @@
 /*Форма создания и редактирования точки маршрута*/
 
 import {CITIES, WAYPOINT_TYPES} from '../const.js';
-import {createElement} from '../render.js';
 import {humanizeDate, capitalize} from '../util.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const DATE_FORMAT_IN_FORM = 'DD/MM/YY HH:mm';
 
@@ -92,6 +92,9 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
 
            <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
            <button class="event__reset-btn" type="reset">Cancel</button>
+           <button class="event__rollup-btn" type="button">
+              <span class="visually-hidden">Open event</span>
+           </button>
          </header>
          <section class="event__details">
            <section class="event__section  event__section--offers">
@@ -102,42 +105,59 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
              </div>
            </section>
 
-           <section class="event__section  event__section--destination">
-             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-             <p class="event__destination-description">${destination ? destination.description : ''}</p>
+           ${destination ?
+      `<section class="event__section  event__section--destination">
+              <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+              <p class="event__destination-description">${destination.description}</p>
 
-             <div class="event__photos-container">
-               <div class="event__photos-tape">
-                 ${destination ? createPictureTemplate(destination.pictures) : ''}
-               </div>
-             </div>
-           </section>
+              <div class="event__photos-container">
+                <div class="event__photos-tape">
+                  ${createPictureTemplate(destination.pictures)}
+                </div>
+              </div>
+            </section>` : ''}
          </section>
        </form>
      </li>`
   );
 }
 
-export default class WaypointFormView {
-  constructor({destination, waypoint, offers}) {
-    this.destination = destination;
-    this.waypoint = waypoint;
-    this.offers = offers;
+export default class WaypointFormView extends AbstractView {
+  #handleFormSubmit = null;
+  #handleFormCancel = null;
+  #destination = null;
+  #waypoint = null;
+  #offers = null;
+
+  constructor({onFormSubmit, onFormCancel, destination, waypoint, offers}) {
+    super();
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormCancel = onFormCancel;
+    this.#destination = destination;
+    this.#waypoint = waypoint;
+    this.#offers = offers;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formCancelHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#formCancelHandler);
   }
 
-  getTemplate() {
-    return createWaypointFormTemplate(this.destination, this.waypoint, this.offers);
+  get template() {
+    return createWaypointFormTemplate(this.#destination, this.#waypoint, this.#offers);
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formCancelHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormCancel();
+  };
 }
