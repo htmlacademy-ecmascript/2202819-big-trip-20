@@ -32,4 +32,11 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-export {CITIES, WAYPOINT_TYPES, DESCRIPTIONS};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+export {CITIES, WAYPOINT_TYPES, DESCRIPTIONS, FilterType};
