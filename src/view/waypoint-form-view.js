@@ -1,7 +1,8 @@
 /*Форма создания и редактирования точки маршрута*/
 
+import {capitalize} from '../util/common-util.js';
+import {humanizeDate} from '../util/data-util.js';
 import {CITIES, WAYPOINT_TYPES} from '../const.js';
-import {humanizeDate, capitalize} from '../util.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const DATE_FORMAT_IN_FORM = 'DD/MM/YY HH:mm';
@@ -25,7 +26,6 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
       `<option value="${city}"></option>`).join('');
   }
 
-
   function createOfferTemplate(offersList) {
     return offersList.map((offer) =>
       `<div class="event__offer-selector">
@@ -38,12 +38,10 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
        </div>`).join('');
   }
 
-
   function createPictureTemplate(pictures) {
     return pictures.map((picture) =>
       `<img class="event__photo" src="${picture.src}" alt="Event photo">`).join('');
   }
-
 
   return (
     `<li class="trip-events__item">

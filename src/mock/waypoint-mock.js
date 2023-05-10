@@ -1,7 +1,7 @@
 /*Генерация тестовых данных*/
 
 import {DESCRIPTIONS} from '../const.js';
-import {getRandomArrayElement} from '../util.js';
+import {getRandomArrayElement} from '../util/common-util.js';
 
 const mockWaypoints = [
   {
