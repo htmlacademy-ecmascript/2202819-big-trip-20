@@ -2,6 +2,7 @@
 
 import {render, replace} from '../framework/render.js';
 import WaypointView from '../view/waypoint-view.js';
+import NoWaypointView from '../view/no-waypoint-view.js';
 import WaypointFormView from '../view/waypoint-form-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 
@@ -72,6 +73,11 @@ export default class WaypointsListPresenter {
 
   #renderWaypointsList() {
     render(this.#waypointsListComponent, this.#waypointsListContainer);
+
+    if (!this.#waypointsListWaypoints.length) {
+      render(new NoWaypointView(), this.#waypointsListComponent.element);
+      return;
+    }
 
     for (let i = 0; i < this.#waypointsListWaypoints.length; i++) {
       const id = this.#waypointsListWaypoints[i].destination;

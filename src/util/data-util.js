@@ -1,4 +1,4 @@
-/*Вспомогательные функции*/
+/*Вспомогательные функции для дат*/
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -36,12 +36,20 @@ function getTimeDiff(timeFrom, timeTo) {
   return waypointDuration;
 }
 
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
+function isWaypointFuture(date) {
+  return dayjs().isBefore(dayjs(date), 'D');
 }
 
-function capitalize(string) {
-  return `${string[0].toUpperCase()}${string.slice(1)}`;
+function isWaypointPresent(date) {
+  return dayjs().isSame(dayjs(date), 'D');
 }
 
-export {humanizeDate, getTimeDiff, getRandomArrayElement, capitalize};
+function isWaypointPast(date) {
+  return dayjs().isAfter(dayjs(date), 'D');
+}
+
+function sortByDate(dateOne, dateTwo) {
+  return dayjs(dateOne).unix() - dayjs(dateTwo).unix();
+}
+
+export {humanizeDate, getTimeDiff, isWaypointFuture, isWaypointPresent, isWaypointPast, sortByDate};

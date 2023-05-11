@@ -1,6 +1,6 @@
 /*Точка маршрута*/
 
-import {humanizeDate, getTimeDiff} from '../util.js';
+import {humanizeDate, getTimeDiff} from '../util/data-util.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const DATE_FORMAT = 'YYYY-MM-DD';
@@ -67,17 +67,22 @@ function createWaypointTemplate(destination, waypoint, offers) {
 }
 
 export default class WaypointView extends AbstractView {
+  /*#handleFavoriteClick = null;*/
   #handleEditClick = null;
   #destination = null;
   #waypoint = null;
   #offers = null;
 
-  constructor({onEditClick, destination, waypoint, offers}) {
+  constructor({/*onFavoriteClick,*/onEditClick, destination, waypoint, offers}) {
     super();
+    /*this.#handleFavoriteClick = onFavoriteClick;*/
     this.#handleEditClick = onEditClick;
     this.#destination = destination;
     this.#waypoint = waypoint;
     this.#offers = offers;
+
+    /*this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);*/
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
@@ -87,9 +92,13 @@ export default class WaypointView extends AbstractView {
     return createWaypointTemplate(this.#destination, this.#waypoint, this.#offers);
   }
 
+  /*#favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };*/
+
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
-
   };
 }

@@ -1,6 +1,7 @@
 /*Точка входа*/
 
 import {RenderPosition, render} from './framework/render.js';
+import {generateFilter} from './mock/filter-mock.js';
 import TripInfoView from './view/trip-info-view.js';
 import FilterView from './view/filter-view.js';
 import SortView from './view/sort-view.js';
@@ -24,7 +25,9 @@ const waypointsListPresenter = new WaypointsListPresenter({
   offersModel,
 });
 
-render(new FilterView(), filtersContainer);
+const filters = generateFilter(waypointsModel.waypoints);
+
+render(new FilterView({filters}), filtersContainer);
 render(new SortView(), tripEventsContainer);
 render(new TripInfoView(), tripInfoContainer, RenderPosition.AFTERBEGIN);
 
