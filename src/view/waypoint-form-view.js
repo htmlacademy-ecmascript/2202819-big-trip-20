@@ -151,7 +151,7 @@ export default class WaypointFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#waypoint);
   };
 
   #formCancelHandler = (evt) => {

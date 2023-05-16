@@ -1,5 +1,6 @@
 /*Генерация тестовых данных*/
 
+import {nanoid} from 'nanoid';
 import {DESCRIPTIONS} from '../const.js';
 import {getRandomArrayElement} from '../util/common-util.js';
 
@@ -187,7 +188,7 @@ const mockOffers = [
         id: 3,
         title: 'Choose seats',
         price: 161,
-      }
+      },
     ],
   },
   {
@@ -207,7 +208,7 @@ const mockOffers = [
         id: 3,
         title: 'Wake up at a certain time',
         price: 71,
-      }
+      },
     ],
   },
   {
@@ -262,7 +263,7 @@ const mockOffers = [
         id: 5,
         title: 'Order a meal from the restaurant',
         price: 45,
-      }
+      },
     ],
   },
   {
@@ -301,7 +302,7 @@ const mockOffers = [
         id: 6,
         title: 'Business lounge',
         price: 177,
-      }
+      },
     ],
   },
   {
@@ -316,7 +317,7 @@ const mockOffers = [
         id: 2,
         title: 'With air conditioning',
         price: 103,
-      }
+      },
     ],
   },
   {
@@ -331,13 +332,16 @@ const mockOffers = [
         id: 2,
         title: 'Choose VIP area',
         price: 61,
-      }
+      },
     ],
   }
 ];
 
 function getRandomWaypoint() {
-  return getRandomArrayElement(mockWaypoints);
+  return {
+    id: nanoid(),
+    ...getRandomArrayElement(mockWaypoints),
+  };
 }
 
 export {mockDestinations, mockOffers, getRandomWaypoint};

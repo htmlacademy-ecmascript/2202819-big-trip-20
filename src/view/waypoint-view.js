@@ -67,22 +67,22 @@ function createWaypointTemplate(destination, waypoint, offers) {
 }
 
 export default class WaypointView extends AbstractView {
-  /*#handleFavoriteClick = null;*/
+  #handleFavoriteClick = null;
   #handleEditClick = null;
   #destination = null;
   #waypoint = null;
   #offers = null;
 
-  constructor({/*onFavoriteClick,*/onEditClick, destination, waypoint, offers}) {
+  constructor({onFavoriteClick, onEditClick, destination, waypoint, offers}) {
     super();
-    /*this.#handleFavoriteClick = onFavoriteClick;*/
+    this.#handleFavoriteClick = onFavoriteClick;
     this.#handleEditClick = onEditClick;
     this.#destination = destination;
     this.#waypoint = waypoint;
     this.#offers = offers;
 
-    /*this.element.querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#favoriteClickHandler);*/
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
@@ -92,10 +92,10 @@ export default class WaypointView extends AbstractView {
     return createWaypointTemplate(this.#destination, this.#waypoint, this.#offers);
   }
 
-  /*#favoriteClickHandler = (evt) => {
+  #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFavoriteClick();
-  };*/
+  };
 
   #editClickHandler = (evt) => {
     evt.preventDefault();

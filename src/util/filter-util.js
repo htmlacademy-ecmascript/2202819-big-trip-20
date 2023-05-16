@@ -1,7 +1,7 @@
 /*Фильтры*/
 
 import {FilterType} from '../const.js';
-import {isWaypointFuture, isWaypointPresent, isWaypointPast, sortByDate} from './data-util.js';
+import {isWaypointFuture, isWaypointPresent, isWaypointPast, sortByDate} from '../util/data-util.js';
 
 const filter = {
   [FilterType.EVERYTHING]: (waypoints) => waypoints.sort((a, b) => sortByDate(a.dateFrom, b.dateFrom)),
