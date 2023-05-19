@@ -39,4 +39,12 @@ const FilterType = {
   PAST: 'past',
 };
 
-export {CITIES, WAYPOINT_TYPES, DESCRIPTIONS, FilterType};
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers',
+};
+
+export {CITIES, WAYPOINT_TYPES, DESCRIPTIONS, FilterType, SortType};
