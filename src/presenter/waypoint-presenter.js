@@ -36,11 +36,11 @@ export default class WaypointPresenter {
     this.#waypoint = waypoint;
 
     const id = this.#waypoint.destination;
-    const waypointOffers = this.#waypoint.offers;
     const type = this.#waypoint.type;
+    const waypointOffers = this.#waypoint.offers;
 
     const destination = this.#destinationsModel.getById(id);
-    const offers = this.#offersModel.getById(type, waypointOffers);
+    const checkedOffers = this.#offersModel.getById(type, waypointOffers);
 
     const prevWaypointComponent = this.#waypointComponent;
     const prevWaypointFormComponent = this.#waypointFormComponent;
@@ -48,15 +48,15 @@ export default class WaypointPresenter {
     this.#waypointComponent = new WaypointView({
       destination,
       waypoint,
-      offers,
+      offers: checkedOffers,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#waypointFormComponent = new WaypointFormView({
-      destination,
+      destinationModel: this.#destinationsModel,
       waypoint,
-      offers,
+      offersModel: this.#offersModel,
       onFormSubmit: this.#handleFormSubmit,
       onFormCancel: this.#handleFormCancel,
     });
@@ -85,6 +85,7 @@ export default class WaypointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#waypointFormComponent.reset(this.#waypoint);
       this.#replaceFormToCard();
     }
   }
@@ -105,6 +106,7 @@ export default class WaypointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#waypointFormComponent.reset(this.#waypoint);
       this.#replaceFormToCard();
     }
   };
@@ -123,6 +125,7 @@ export default class WaypointPresenter {
   };
 
   #handleFormCancel = () => {
+    this.#waypointFormComponent.reset(this.#waypoint);
     this.#replaceFormToCard();
   };
 }
