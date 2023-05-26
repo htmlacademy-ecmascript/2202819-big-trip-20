@@ -3,7 +3,7 @@
 import {capitalize} from '../util/common-util.js';
 import {humanizeDate} from '../util/data-util.js';
 import {CITIES, WAYPOINT_TYPES} from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const DATE_FORMAT_IN_FORM = 'DD/MM/YY HH:mm';
 
@@ -29,7 +29,7 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
   function createOfferTemplate(offersList) {
     return offersList.map((offer) =>
       `<div class="event__offer-selector">
-         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${offer.id}" type="checkbox" name="event-offer-${type}" ${waypoint.offers.includes(offer.id) ? 'checked' : ''}>
+         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${offer.id}" value="${offer.id}" type="checkbox" name="event-offer-${type}" ${waypoint.offers.includes(offer.id) ? 'checked' : ''}>
          <label class="event__offer-label" for="event-offer-${type}-${offer.id}">
            <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
@@ -120,21 +120,35 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
   );
 }
 
-export default class WaypointFormView extends AbstractView {
+export default class WaypointFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleFormCancel = null;
-  #destination = null;
+  #destinationModel = null;
   #waypoint = null;
-  #offers = null;
+  #offersModel = null;
 
-  constructor({onFormSubmit, onFormCancel, destination, waypoint, offers}) {
+  constructor({onFormSubmit, onFormCancel, destinationModel, waypoint, offersModel}) {
     super();
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormCancel = onFormCancel;
-    this.#destination = destination;
-    this.#waypoint = waypoint;
-    this.#offers = offers;
+    this.#destinationModel = destinationModel;
+    this._setState(WaypointFormView.parseWaypointToState(waypoint));
+    this.#offersModel = offersModel;
 
+    this._restoreHandlers();
+  }
+
+  get template() {
+    return createWaypointFormTemplate(this.#destinationModel.getById(this._state.destination), this._state, this.#offersModel.getByType(this._state.type));
+  }
+
+  reset(waypoint) {
+    this.updateElement(
+      WaypointFormView.parseWaypointToState(waypoint),
+    );
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
@@ -143,19 +157,57 @@ export default class WaypointFormView extends AbstractView {
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#formCancelHandler);
+
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeChangeHandler);
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#offerSelectHandler);
   }
 
-  get template() {
-    return createWaypointFormTemplate(this.#destination, this.#waypoint, this.#offers);
-  }
+  #typeChangeHandler = (evt) => {
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    this.updateElement({
+      destination: this.#destinationModel.getByName(evt.target.value).id,
+    });
+  };
+
+  #offerSelectHandler = (evt) => {
+    const selectedOffer = evt.target.value;
+    if (evt.target.checked) {
+      this.updateElement({
+        offers: [...this._state.offers, selectedOffer],
+      });
+    } else {
+      this.updateElement({
+        offers: [...this._state.offers.filter((offer) => offer !== selectedOffer)],
+      });
+    }
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#waypoint);
+    this.#handleFormSubmit(WaypointFormView.parseStateToWaypoint(this._state));
   };
 
   #formCancelHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormCancel();
   };
+
+  static parseWaypointToState(state) {
+    return {...state};
+  }
+
+  static parseStateToWaypoint(waypoint) {
+    return {...waypoint};
+  }
 }
