@@ -36,6 +36,14 @@ function getTimeDiff(timeFrom, timeTo) {
   return waypointDuration;
 }
 
+function getDateDiff(dateOne, dateTwo) {
+  return dayjs(dateOne).unix() - dayjs(dateTwo).unix();
+}
+
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
 function isWaypointFuture(date) {
   return dayjs().isBefore(dayjs(date), 'D');
 }
@@ -48,8 +56,4 @@ function isWaypointPast(date) {
   return dayjs().isAfter(dayjs(date), 'D');
 }
 
-function sortByDate(dateOne, dateTwo) {
-  return dayjs(dateOne).unix() - dayjs(dateTwo).unix();
-}
-
-export {humanizeDate, getTimeDiff, isWaypointFuture, isWaypointPresent, isWaypointPast, sortByDate};
+export {humanizeDate, getTimeDiff, getDateDiff, isDatesEqual, isWaypointFuture, isWaypointPresent, isWaypointPast};
