@@ -1,15 +1,15 @@
 /*Презентер для отрисовки шапки*/
-/*
+
 import {RenderPosition, render} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 
 export default class HeaderPresenter {
-  #tripInfoContainer = null;
+  #tripMainContainer = null;
 
   #tripInfoComponent = new TripInfoView();
 
-  constructor({tripInfoContainer}) {
-    this.#tripInfoContainer = tripInfoContainer;
+  constructor({tripMainContainer}) {
+    this.#tripMainContainer = tripMainContainer;
   }
 
   init() {
@@ -17,7 +17,6 @@ export default class HeaderPresenter {
   }
 
   #renderTripInfo() {
-    render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
+    render(this.#tripInfoComponent, this.#tripMainContainer, RenderPosition.AFTERBEGIN);
   }
 }
-*/

@@ -1,11 +1,10 @@
 /*Точка входа*/
 
-import {RenderPosition, render} from './framework/render.js';
-import TripInfoView from './view/trip-info-view.js';
 import FiltersModel from './model/filters-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import WaypointsModel from './model/waypoints-model.js';
 import OffersModel from './model/offers-model.js';
+import HeaderPresenter from './presenter/header-presenter.js';
 import FilterPresenter from'./presenter/filter-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';
 
@@ -17,6 +16,10 @@ const filtersModel = new FiltersModel();
 const destinationsModel = new DestinationsModel();
 const waypointsModel = new WaypointsModel();
 const offersModel = new OffersModel();
+
+const headerPresenter = new HeaderPresenter({
+  tripMainContainer,
+});
 
 const filterPresenter = new FilterPresenter({
   filtersContainer,
@@ -33,7 +36,6 @@ const boardPresenter = new BoardPresenter({
   offersModel,
 });
 
-render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
-
+headerPresenter.init();
 filterPresenter.init();
 boardPresenter.init();
