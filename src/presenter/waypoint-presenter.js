@@ -1,5 +1,7 @@
 /*Презентер для отрисовки точки маршрута*/
 
+import {UserAction, UpdateType} from '../const.js';
+import {isDatesEqual} from '../util/data-util.js';
 import {render, replace, remove} from '../framework/render.js';
 import WaypointView from '../view/waypoint-view.js';
 import WaypointFormView from '../view/waypoint-form-view.js';
@@ -11,14 +13,16 @@ const Mode = {
 
 export default class WaypointPresenter {
   #waypointsListContainer = null;
+
   #destinationsModel = null;
   #waypointsModel = null;
   #offersModel = null;
+
+  #waypointFormComponent = null;
+  #waypointComponent = null;
+
   #handleDataChange = null;
   #handleModeChange = null;
-
-  #waypointComponent = null;
-  #waypointFormComponent = null;
 
   #waypoint = null;
   #mode = Mode.DEFAULT;
@@ -58,6 +62,7 @@ export default class WaypointPresenter {
       waypoint,
       offersModel: this.#offersModel,
       onFormSubmit: this.#handleFormSubmit,
+      onFormDelete: this.#handleFormDelete,
       onFormCancel: this.#handleFormCancel,
     });
 
@@ -116,12 +121,30 @@ export default class WaypointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#waypoint, isFavorite: !this.#waypoint.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_WAYPOINT,
+      UpdateType.MINOR,
+      {...this.#waypoint, isFavorite: !this.#waypoint.isFavorite},
+    );
   };
 
-  #handleFormSubmit = (waypoint) => {
-    this.#handleDataChange(waypoint);
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = !isDatesEqual(this.#waypoint.dateFrom, update.dateFrom);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_WAYPOINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToCard();
+  };
+
+  #handleFormDelete = (waypoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint,
+    );
   };
 
   #handleFormCancel = () => {

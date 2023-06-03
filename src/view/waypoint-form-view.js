@@ -1,16 +1,27 @@
 /*Форма создания и редактирования точки маршрута*/
 
+import {CITIES, WAYPOINT_TYPES} from '../const.js';
 import {capitalize} from '../util/common-util.js';
 import {humanizeDate} from '../util/data-util.js';
-import {CITIES, WAYPOINT_TYPES} from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
+import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+const DEFAULT_WAYPOINT = {
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: 'taxi',
+};
+
 const DATE_FORMAT_IN_FORM = 'DD/MM/YY HH:mm';
 
-function createWaypointFormTemplate(destination, waypoint, offers) {
+function createWaypointFormTemplate(destination, waypoint, offers, isNew) {
   const {basePrice, dateFrom, dateTo, type} = waypoint;
 
   const startTimeInForm = humanizeDate(dateFrom, DATE_FORMAT_IN_FORM);
@@ -69,7 +80,7 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
              <label class="event__label  event__type-output" for="event-destination-1">
                ${type ? capitalize(type) : ''}
              </label>
-             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-1">
+             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(`${destination.name}`) : ''}" list="destination-list-1">
              <datalist id="destination-list-1">
                ${createCityTemplate(CITIES)}
              </datalist>
@@ -88,14 +99,14 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
                <span class="visually-hidden">Price</span>
                &euro;
              </label>
-             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${basePrice}`)}">
            </div>
 
-           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-           <button class="event__reset-btn" type="reset">Cancel</button>
-           <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-           </button>
+           <button class="event__save-btn  btn  btn--blue" type="submit" ${destination?.name && waypoint.dateFrom && waypoint.dateTo ? '' : 'disabled'}>Save</button>
+           <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
+           ${isNew ? '' : `<button class="event__rollup-btn" type="button">
+             <span class="visually-hidden">Open event</span>
+           </button>`}
          </header>
          <section class="event__details">
            <section class="event__section  event__section--offers">
@@ -106,8 +117,7 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
              </div>
            </section>
 
-           ${destination ?
-      `<section class="event__section  event__section--destination">
+           ${destination ? `<section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
               <p class="event__destination-description">${destination.description}</p>
 
@@ -124,26 +134,33 @@ function createWaypointFormTemplate(destination, waypoint, offers) {
 }
 
 export default class WaypointFormView extends AbstractStatefulView {
-  #handleFormSubmit = null;
-  #handleFormCancel = null;
+  #datepicker = null;
+
   #destinationModel = null;
   #waypoint = null;
   #offersModel = null;
-  #datepicker = null;
 
-  constructor({onFormSubmit, onFormCancel, destinationModel, waypoint, offersModel}) {
+  #handleFormSubmit = null;
+  #handleFormDelete = null;
+  #handleFormCancel = null;
+
+  #isNew = false;
+
+  constructor({destinationModel, waypoint = DEFAULT_WAYPOINT, offersModel, onFormSubmit, onFormDelete, onFormCancel, isNew}) {
     super();
-    this.#handleFormSubmit = onFormSubmit;
-    this.#handleFormCancel = onFormCancel;
     this.#destinationModel = destinationModel;
     this._setState(WaypointFormView.parseWaypointToState(waypoint));
     this.#offersModel = offersModel;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormDelete = onFormDelete;
+    this.#handleFormCancel = onFormCancel;
+    this.#isNew = isNew;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createWaypointFormTemplate(this.#destinationModel.getById(this._state.destination), this._state, this.#offersModel.getByType(this._state.type));
+    return createWaypointFormTemplate(this.#destinationModel.getById(this._state.destination), this._state, this.#offersModel.getByType(this._state.type), this.#isNew);
   }
 
   removeElement() {
@@ -165,11 +182,16 @@ export default class WaypointFormView extends AbstractStatefulView {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#formCancelHandler);
+    if(this.#isNew) {
+      this.element.querySelector('.event__reset-btn')
+        .addEventListener('click', this.#formCancelHandler);
+    } else {
+      this.element.querySelector('.event__reset-btn')
+        .addEventListener('click', this.#formDeleteHandler);
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#formCancelHandler);
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#formCancelHandler);
+    }
 
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
@@ -214,6 +236,11 @@ export default class WaypointFormView extends AbstractStatefulView {
     this.#handleFormSubmit(WaypointFormView.parseStateToWaypoint(this._state));
   };
 
+  #formDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormDelete(WaypointFormView.parseStateToWaypoint(this._state));
+  };
+
   #formCancelHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormCancel();
@@ -237,7 +264,6 @@ export default class WaypointFormView extends AbstractStatefulView {
       {
         enableTime: true,
         dateFormat: 'd/m/y H:i',
-        minDate: 'today',
         maxDate: this._state.dateTo,
         defaultDate: this._state.dateFrom,
         onChange: this.#dateFromChangeHandler,
