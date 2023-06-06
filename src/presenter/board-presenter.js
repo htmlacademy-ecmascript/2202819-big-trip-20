@@ -5,16 +5,20 @@ import {filter} from '../util/filter-util.js';
 import {sortByDate, sortByTime, sortByPrice} from '../util/sort-util.js';
 import {render, remove} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
+import LoadingView from '../view/loading-view.js';
 import NoWaypointView from '../view/no-waypoint-view.js';
-import NewWaypointButtonView from '../view/new-waypoint-button-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
-import NewWaypointPresenter from './new-waypoint-presenter.js';
+import NewWaypointButtonView from '../view/new-waypoint-button-view.js';
+import FilterPresenter from'./filter-presenter.js';
 import WaypointPresenter from './waypoint-presenter.js';
+import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 export default class BoardPresenter {
   #tripMainContainer = null;
+  #filtersContainer = null;
   #boardContainer = null;
 
+  #filterPresenter = null;
   #newWaypointPresenter = null;
   #waypointPresenters = new Map();
 
@@ -26,13 +30,18 @@ export default class BoardPresenter {
   #sortComponent = null;
   #noWaypointComponent = null;
   #newWaypointButtonComponent = null;
+  #loadingComponent = new LoadingView();
   #waypointsListComponent = new WaypointsListView();
 
   #filterType = FilterType.EVERYTHING;
   #currentSortType = SortType.DAY;
 
-  constructor({tripMainContainer, boardContainer, filtersModel, destinationsModel, waypointsModel, offersModel}) {
+  #isLoading = true;
+  #isCreating = false;
+
+  constructor({tripMainContainer, filtersContainer, boardContainer, filtersModel, destinationsModel, waypointsModel, offersModel}) {
     this.#tripMainContainer = tripMainContainer;
+    this.#filtersContainer = filtersContainer;
     this.#boardContainer = boardContainer;
     this.#filtersModel = filtersModel;
     this.#destinationsModel = destinationsModel;
@@ -40,12 +49,17 @@ export default class BoardPresenter {
     this.#offersModel = offersModel;
 
     const handleNewWaypointButtonClick = () => {
+      this.#isCreating = true;
       this.createWaypoint();
       this.#newWaypointButtonComponent.element.disabled = true;
     };
 
     const handleNewWaypointFormClose = () => {
+      this.#isCreating = false;
       this.#newWaypointButtonComponent.element.disabled = false;
+      if (this.waypoints.length === 0) {
+        this.#renderNoWaypoint();
+      }
     };
 
     this.#newWaypointButtonComponent = new NewWaypointButtonView({
@@ -60,8 +74,16 @@ export default class BoardPresenter {
       onDestroy: handleNewWaypointFormClose,
     });
 
+    this.#filterPresenter = new FilterPresenter({
+      filtersContainer: this.#filtersContainer,
+      filtersModel: this.#filtersModel,
+      waypointsModel: this.#waypointsModel,
+    });
+
     this.#filtersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
     this.#waypointsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
   }
 
   get waypoints() {
@@ -124,6 +146,14 @@ export default class BoardPresenter {
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        remove(this.#loadingComponent);
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+      case UpdateType.FINISH:
+        this.#isLoading = false;
+        break;
     }
   };
 
@@ -144,6 +174,10 @@ export default class BoardPresenter {
     });
 
     render(this.#sortComponent, this.#boardContainer);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer);
   }
 
   #renderNoWaypoint() {
@@ -173,7 +207,12 @@ export default class BoardPresenter {
 
     render(this.#waypointsListComponent, this.#boardContainer);
 
-    if (this.waypoints.length === 0) {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    if (this.waypoints.length === 0 && !this.#isCreating) {
       this.#renderNoWaypoint();
       return;
     }
@@ -189,6 +228,7 @@ export default class BoardPresenter {
     this.#waypointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;

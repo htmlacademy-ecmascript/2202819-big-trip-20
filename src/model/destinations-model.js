@@ -1,9 +1,16 @@
 /*Модель пункта назначения с временными данными*/
 
-import {mockDestinations} from '../mock/waypoint-mock.js';
+import {UpdateType} from '../const.js';
+import Observable from '../framework/observable.js';
 
-export default class DestinationsModel {
-  #destinations = mockDestinations;
+export default class DestinationsModel extends Observable {
+  #waypointsApiService = null;
+  #destinations = [];
+
+  constructor({waypointsApiService}) {
+    super();
+    this.#waypointsApiService = waypointsApiService;
+  }
 
   get destinations() {
     return this.#destinations;
@@ -15,5 +22,14 @@ export default class DestinationsModel {
 
   getByName(name) {
     return this.#destinations.find((elem) => elem.name === name);
+  }
+
+  async init() {
+    try {
+      this.#destinations = await this.#waypointsApiService.destinations;
+    } catch (err) {
+      this.#destinations = [];
+    }
+    this._notify(UpdateType.INIT);
   }
 }
