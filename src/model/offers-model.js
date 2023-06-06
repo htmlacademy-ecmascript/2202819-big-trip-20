@@ -1,9 +1,16 @@
 /*Модель дополнительных опций с временными данными*/
 
-import {mockOffers} from '../mock/waypoint-mock.js';
+import {UpdateType} from '../const.js';
+import Observable from '../framework/observable.js';
 
-export default class OffersModel {
-  #offers = mockOffers;
+export default class OffersModel extends Observable {
+  #waypointsApiService = null;
+  #offers = [];
+
+  constructor({waypointsApiService}) {
+    super();
+    this.#waypointsApiService = waypointsApiService;
+  }
 
   get offers() {
     return this.#offers;
@@ -18,6 +25,15 @@ export default class OffersModel {
   }
 
   getById(type, ids) {
-    return this.getByType(type).filter((offer) => ids.includes(offer.id));
+    return this.getByType(type)?.filter((offer) => ids.includes(offer.id));
+  }
+
+  async init() {
+    try {
+      this.#offers = await this.#waypointsApiService.offers;
+    } catch (err) {
+      this.#offers = [];
+    }
+    this._notify(UpdateType.INIT);
   }
 }

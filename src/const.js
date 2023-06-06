@@ -57,6 +57,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  FINISH: 'FINISH',
 };
 
 export {CITIES, WAYPOINT_TYPES, DESCRIPTIONS, FilterType, SortType, UserAction, UpdateType};

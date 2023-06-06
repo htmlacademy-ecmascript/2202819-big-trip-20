@@ -102,7 +102,7 @@ function createWaypointFormTemplate(destination, waypoint, offers, isNew) {
              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${basePrice}`)}">
            </div>
 
-           <button class="event__save-btn  btn  btn--blue" type="submit" ${destination?.name && waypoint.dateFrom && waypoint.dateTo ? '' : 'disabled'}>Save</button>
+           <button class="event__save-btn  btn  btn--blue" type="submit" ${destination?.name && dateFrom && dateTo && basePrice > 0 ? '' : 'disabled'}>Save</button>
            <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
            ${isNew ? '' : `<button class="event__rollup-btn" type="button">
              <span class="visually-hidden">Open event</span>
@@ -199,6 +199,9 @@ export default class WaypointFormView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#basePriceChangeHandler);
+
     this.element.querySelector('.event__available-offers')
       .addEventListener('change', this.#offerSelectHandler);
 
@@ -215,6 +218,13 @@ export default class WaypointFormView extends AbstractStatefulView {
   #destinationChangeHandler = (evt) => {
     this.updateElement({
       destination: this.#destinationModel.getByName(evt.target.value).id,
+    });
+  };
+
+  #basePriceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      basePrice: Number(evt.target.value)
     });
   };
 
