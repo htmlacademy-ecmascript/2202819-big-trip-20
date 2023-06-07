@@ -23,9 +23,6 @@ function createWaypointTemplate(destination, waypoint, offers) {
     : '';
 
   function createOfferTemplate(offersList) {
-    if (!offersList) {
-      return '';
-    }
     return offersList.map((offer) =>
       `<li class="event__offer">
          <span class="event__offer-title">${offer.title}</span>
@@ -55,7 +52,7 @@ function createWaypointTemplate(destination, waypoint, offers) {
          </p>
          <h4 class="visually-hidden">Offers:</h4>
          <ul class="event__selected-offers">
-           ${createOfferTemplate(offers)}
+           ${offers ? createOfferTemplate(offers) : ''}
          </ul>
          <button class="event__favorite-btn ${favoriteClassName}" type="button">
            <span class="visually-hidden">Add to favorite</span>
