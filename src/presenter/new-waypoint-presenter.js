@@ -1,7 +1,6 @@
 /*Презентер для отрисовки кнопки добавления точки маршрута*/
 
-import {nanoid} from 'nanoid';
-import {UserAction, UpdateType} from '../const.js';
+import {UpdateType, UserAction} from '../const.js';
 import {RenderPosition, render, remove} from '../framework/render.js';
 import WaypointFormView from '../view/waypoint-form-view.js';
 
@@ -30,7 +29,7 @@ export default class NewWaypointPresenter {
     }
 
     this.#waypointFormComponent = new WaypointFormView({
-      destinationModel: this.#destinationsModel,
+      destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
       onFormSubmit: this.#handleFormSubmit,
       onFormCancel: this.#handleFormCancel,
@@ -55,13 +54,31 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#waypointFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#waypointFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#waypointFormComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (waypoint) => {
     this.#handleDataChange(
       UserAction.ADD_WAYPOINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...waypoint},
+      waypoint,
     );
-    this.destroy();
   };
 
   #handleFormCancel = () => {

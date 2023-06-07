@@ -1,6 +1,6 @@
 /*Презентер для отрисовки точки маршрута*/
 
-import {UserAction, UpdateType} from '../const.js';
+import {UpdateType, UserAction} from '../const.js';
 import {isDatesEqual} from '../util/data-util.js';
 import {render, replace, remove} from '../framework/render.js';
 import WaypointView from '../view/waypoint-view.js';
@@ -58,7 +58,7 @@ export default class WaypointPresenter {
     });
 
     this.#waypointFormComponent = new WaypointFormView({
-      destinationModel: this.#destinationsModel,
+      destinationsModel: this.#destinationsModel,
       waypoint,
       offersModel: this.#offersModel,
       onFormSubmit: this.#handleFormSubmit,
@@ -76,7 +76,8 @@ export default class WaypointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#waypointFormComponent, prevWaypointFormComponent);
+      replace(this.#waypointComponent, prevWaypointFormComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevWaypointComponent);
@@ -93,6 +94,40 @@ export default class WaypointPresenter {
       this.#waypointFormComponent.reset(this.#waypoint);
       this.#replaceFormToCard();
     }
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#waypointFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#waypointFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#waypointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#waypointFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    this.#waypointFormComponent.shake(resetFormState);
   }
 
   #replaceCardToForm() {
@@ -136,7 +171,6 @@ export default class WaypointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    this.#replaceFormToCard();
   };
 
   #handleFormDelete = (waypoint) => {
