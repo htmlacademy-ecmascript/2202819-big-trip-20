@@ -1,22 +1,47 @@
-/*Презентер для отрисовки шапки*/
+/*Презентер для отрисовки информации о поездке*/
 
-import {RenderPosition, render} from '../framework/render.js';
+import {RenderPosition, render, remove, replace} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 
 export default class HeaderPresenter {
   #tripMainContainer = null;
 
-  #tripInfoComponent = new TripInfoView();
+  #destinationsModel = null;
+  #waypointsModel = null;
+  #offersModel = null;
 
-  constructor({tripMainContainer}) {
+  #tripInfoComponent = null;
+
+  constructor({tripMainContainer, destinationsModel, waypointsModel, offersModel}) {
     this.#tripMainContainer = tripMainContainer;
+    this.#destinationsModel = destinationsModel;
+    this.#waypointsModel = waypointsModel;
+    this.#offersModel = offersModel;
   }
 
   init() {
-    this.#renderTripInfo();
+    this.#waypointsModel.addObserver(this.#handleModelEvent);
   }
 
   #renderTripInfo() {
-    render(this.#tripInfoComponent, this.#tripMainContainer, RenderPosition.AFTERBEGIN);
+    const prevTripInfoComponent = this.#tripInfoComponent;
+
+    this.#tripInfoComponent = new TripInfoView({
+      destinationsModel: this.#destinationsModel,
+      waypointsModel: this.#waypointsModel,
+      offersModel: this.#offersModel,
+    });
+
+    if (prevTripInfoComponent === null) {
+      render(this.#tripInfoComponent, this.#tripMainContainer, RenderPosition.AFTERBEGIN);
+      return;
+    }
+
+    replace(this.#tripInfoComponent, prevTripInfoComponent);
+    remove(prevTripInfoComponent);
   }
+
+  #handleModelEvent = () => {
+    this.#renderTripInfo();
+  };
 }

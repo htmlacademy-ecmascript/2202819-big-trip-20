@@ -69,7 +69,6 @@ export default class NewWaypointPresenter {
         isDeleting: false,
       });
     };
-
     this.#waypointFormComponent.shake(resetFormState);
   }
 

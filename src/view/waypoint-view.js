@@ -71,6 +71,7 @@ function createWaypointTemplate(destination, waypoint, offers) {
 export default class WaypointView extends AbstractView {
   #handleFavoriteClick = null;
   #handleEditClick = null;
+
   #destination = null;
   #waypoint = null;
   #offers = null;

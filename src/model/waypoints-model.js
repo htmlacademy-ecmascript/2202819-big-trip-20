@@ -1,11 +1,10 @@
-/*Модель точки маршрута с временными данными*/
+/*Модель точки маршрута*/
 
 import {UpdateType} from '../const.js';
 import Observable from '../framework/observable.js';
 
 export default class WaypointsModel extends Observable{
   #waypointsApiService = null;
-
   #waypoints = [];
 
   constructor({waypointsApiService}) {
@@ -34,6 +33,7 @@ export default class WaypointsModel extends Observable{
     if (index === -1) {
       throw new Error('Can\'t update unexisting waypoint');
     }
+
     try {
       const response = await this.#waypointsApiService.updateWaypoint(update);
       const updatedWaypoint = this.#adaptToClient(response);
@@ -65,6 +65,7 @@ export default class WaypointsModel extends Observable{
     if (index === -1) {
       throw new Error('Can\'t delete unexisting waypoint');
     }
+
     try {
       await this.#waypointsApiService.deleteWaypoint(update);
       this.#waypoints = [
@@ -81,7 +82,7 @@ export default class WaypointsModel extends Observable{
     const adaptedWaypoint = {...waypoint,
       basePrice: waypoint['base_price'],
       dateFrom: waypoint['date_from'] !== null ? new Date(waypoint['date_from']) : waypoint['date_from'],
-      dateTo: waypoint['date_from'] !== null ? new Date(waypoint['date_from']) : waypoint['date_from'],
+      dateTo: waypoint['date_to'] !== null ? new Date(waypoint['date_to']) : waypoint['date_to'],
       isFavorite: waypoint['is_favorite'],
     };
 

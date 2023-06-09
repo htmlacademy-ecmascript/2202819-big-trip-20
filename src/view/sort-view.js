@@ -54,7 +54,6 @@ export default class SortView extends AbstractView {
     if (evt.target.tagName !== 'LABEL' || evt.target.dataset.sortType === SortType.EVENT || evt.target.dataset.sortType === SortType.OFFERS) {
       return;
     }
-
     evt.preventDefault();
     this.#handleSortTypeChange(evt.target.dataset.sortType);
   };

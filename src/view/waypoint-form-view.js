@@ -224,7 +224,6 @@ export default class WaypointFormView extends AbstractStatefulView {
   };
 
   #basePriceChangeHandler = (evt) => {
-    evt.preventDefault();
     this.updateElement({
       basePrice: Number(evt.target.value)
     });

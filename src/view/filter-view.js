@@ -26,6 +26,7 @@ function createFilterTemplate(filters, currentFilterType) {
      </form>`
   );
 }
+
 export default class FilterView extends AbstractView {
   #filters = null;
   #currentFilter = null;
