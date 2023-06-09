@@ -32,7 +32,6 @@ function getTimeDiff(timeFrom, timeTo) {
       waypointDuration = dayjs.duration(timeDiff).format('mm[M]');
       break;
   }
-
   return waypointDuration;
 }
 

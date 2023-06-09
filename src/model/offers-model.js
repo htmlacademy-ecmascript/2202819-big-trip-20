@@ -1,4 +1,4 @@
-/*Модель дополнительных опций с временными данными*/
+/*Модель дополнительных опций*/
 
 import {UpdateType} from '../const.js';
 import Observable from '../framework/observable.js';

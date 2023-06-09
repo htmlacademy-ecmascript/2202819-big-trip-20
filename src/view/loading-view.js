@@ -1,4 +1,4 @@
-/*Загрузка данных*/
+/*Сообщение о загрузке данных*/
 
 import AbstractView from '../framework/view/abstract-view.js';
 

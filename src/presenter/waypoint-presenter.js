@@ -1,6 +1,7 @@
 /*Презентер для отрисовки точки маршрута*/
 
 import {UpdateType, UserAction} from '../const.js';
+import {isPricesEqual} from '../util/common-util.js';
 import {isDatesEqual} from '../util/data-util.js';
 import {render, replace, remove} from '../framework/render.js';
 import WaypointView from '../view/waypoint-view.js';
@@ -164,7 +165,8 @@ export default class WaypointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    const isMinorUpdate = !isDatesEqual(this.#waypoint.dateFrom, update.dateFrom);
+    const isMinorUpdate = !isDatesEqual(this.#waypoint.dateFrom, update.dateFrom)
+    || !isPricesEqual(this.#waypoint.basePrice, update.basePrice);
 
     this.#handleDataChange(
       UserAction.UPDATE_WAYPOINT,

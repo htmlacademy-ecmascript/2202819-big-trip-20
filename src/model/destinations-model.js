@@ -1,4 +1,4 @@
-/*Модель пункта назначения с временными данными*/
+/*Модель пунктов назначения*/
 
 import {UpdateType} from '../const.js';
 import Observable from '../framework/observable.js';
