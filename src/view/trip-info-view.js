@@ -6,7 +6,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 import dayjs from 'dayjs';
 
-function createTripInfoTemplate(waypoints, intialDestination, finalDestination, shortWaypoints, intialDate, finalDate, totalPrice) {
+function createTripInfoTemplate({waypoints, intialDestination, finalDestination, shortWaypoints, intialDate, finalDate, totalPrice}) {
   return (
     `<section class="trip-main__trip-info  trip-info">
        <div class="trip-info__main">
@@ -45,15 +45,13 @@ export default class TripInfoView extends AbstractView {
     const intialDate = humanizeDate(waypoints[0]?.dateFrom, `${isSameMonth ? 'MMM D' : 'D MMM'}`);
     const finalDate = humanizeDate(waypoints[waypoints.length - 1]?.dateTo, `${isSameMonth ? 'D' : 'D MMM'}`);
 
-    const totalBasePrice = waypoints?.reduce((total, waypoint) => total + waypoint.basePrice, 0);
-    const totalCheckedOffersPrice = waypoints?.reduce((total, waypoint) => {
+    const totalPrice = waypoints?.reduce((total, waypoint) => {
       const checkedOffers = this.#offersModel.getById(waypoint.type, waypoint.offers);
       const checkedOffersPrice = checkedOffers?.reduce((sum, checkedOffer) => sum + checkedOffer.price, 0);
-      total += checkedOffersPrice;
+      total += checkedOffersPrice + waypoint.basePrice;
       return total;
     }, 0);
-    const totalPrice = totalBasePrice + totalCheckedOffersPrice;
 
-    return createTripInfoTemplate(waypoints, intialDestination, finalDestination, shortWaypoints, intialDate, finalDate, totalPrice);
+    return createTripInfoTemplate({waypoints, intialDestination, finalDestination, shortWaypoints, intialDate, finalDate, totalPrice});
   }
 }
