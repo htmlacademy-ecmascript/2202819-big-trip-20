@@ -16,7 +16,6 @@ export default class WaypointPresenter {
   #waypointsListContainer = null;
 
   #destinationsModel = null;
-  #waypointsModel = null;
   #offersModel = null;
 
   #waypointFormComponent = null;
@@ -28,10 +27,9 @@ export default class WaypointPresenter {
   #waypoint = null;
   #mode = Mode.DEFAULT;
 
-  constructor({waypointsListContainer, destinationsModel, waypointsModel, offersModel, onDataChange, onModeChange}) {
+  constructor({waypointsListContainer, destinationsModel, offersModel, onDataChange, onModeChange}) {
     this.#waypointsListContainer = waypointsListContainer;
     this.#destinationsModel = destinationsModel;
-    this.#waypointsModel = waypointsModel;
     this.#offersModel = offersModel;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;

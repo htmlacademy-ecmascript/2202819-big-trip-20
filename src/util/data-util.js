@@ -43,16 +43,16 @@ function isDatesEqual(dateA, dateB) {
   return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }
 
-function isWaypointFuture(date) {
+function isFutureWaypoint(date) {
   return dayjs().isBefore(dayjs(date), 'D');
 }
 
-function isWaypointPresent(date) {
+function isPresentWaypoint(date) {
   return dayjs().isSame(dayjs(date), 'D');
 }
 
-function isWaypointPast(date) {
+function isPastWaypoint(date) {
   return dayjs().isAfter(dayjs(date), 'D');
 }
 
-export {humanizeDate, getTimeDiff, getDateDiff, isDatesEqual, isWaypointFuture, isWaypointPresent, isWaypointPast};
+export {humanizeDate, getTimeDiff, getDateDiff, isDatesEqual, isFutureWaypoint, isPresentWaypoint, isPastWaypoint};

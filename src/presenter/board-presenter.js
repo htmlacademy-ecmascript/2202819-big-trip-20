@@ -189,7 +189,6 @@ export default class BoardPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-
     this.#currentSortType = sortType;
     this.#clearBoard();
     this.#renderBoard();
@@ -200,7 +199,6 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
-
     render(this.#sortComponent, this.#boardContainer);
   }
 
@@ -212,7 +210,6 @@ export default class BoardPresenter {
     this.#noWaypointComponent = new NoWaypointView({
       filterType: this.#filterType,
     });
-
     render(this.#noWaypointComponent, this.#boardContainer);
   }
 
@@ -225,7 +222,6 @@ export default class BoardPresenter {
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
-
     waypointPresenter.init(waypoint);
     this.#waypointPresenters.set(waypoint.id, waypointPresenter);
   }
