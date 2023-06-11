@@ -8,7 +8,7 @@ import HeaderPresenter from './presenter/header-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import WaypointsApiService from './waypoints-api-service.js';
 
-const AUTHORIZATION = 'Basic yaYayaCocoJamboYayaEaHa2raza';
+const AUTHORIZATION = 'Basic yaYayaCocoJamboYayaEaHa2raza!';
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainContainer = document.querySelector('.trip-main');
