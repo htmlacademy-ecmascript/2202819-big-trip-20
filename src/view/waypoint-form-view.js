@@ -110,14 +110,14 @@ function createWaypointFormTemplate(destinations, destination, waypoint, offers,
              <span class="visually-hidden">Open event</span>
            </button>`}
          </header>
-         <section class="event__details">
-           <section class="event__section  event__section--offers">
+          <section class="event__details">
+           ${ offers?.length ? `<section class="event__section  event__section--offers">
              <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
              <div class="event__available-offers">
-               ${offers ? createOfferTemplate(offers) : ''}
+               ${createOfferTemplate(offers)}
              </div>
-           </section>
+           </section>` : ''}
 
            ${destination ? `<section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -139,7 +139,6 @@ export default class WaypointFormView extends AbstractStatefulView {
   #datepicker = null;
 
   #destinationsModel = null;
-  #waypoint = null;
   #offersModel = null;
 
   #handleFormSubmit = null;
@@ -205,7 +204,7 @@ export default class WaypointFormView extends AbstractStatefulView {
       .addEventListener('change', this.#basePriceChangeHandler);
 
     this.element.querySelector('.event__available-offers')
-      .addEventListener('change', this.#offerSelectHandler);
+      ?.addEventListener('change', this.#offerSelectHandler);
 
     this.#setDatepickerFrom();
     this.#setDatepickerTo();

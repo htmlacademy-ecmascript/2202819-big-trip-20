@@ -20,7 +20,9 @@ export default class HeaderPresenter {
   }
 
   init() {
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
     this.#waypointsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
   }
 
   #renderTripInfo() {
