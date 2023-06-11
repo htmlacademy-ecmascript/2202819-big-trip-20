@@ -3,7 +3,7 @@
 import {getDateDiff} from './data-util';
 import dayjs from 'dayjs';
 
-function getDurationWaypoint(waypoint) {
+function getWaypointDuration(waypoint) {
   return dayjs(waypoint.dateTo).diff(dayjs(waypoint.dateFrom));
 }
 
@@ -12,7 +12,7 @@ function sortByDate(waypoints) {
 }
 
 function sortByTime(waypoints) {
-  return waypoints.sort((a, b) => getDurationWaypoint(b) - getDurationWaypoint(a));
+  return waypoints.sort((a, b) => getWaypointDuration(b) - getWaypointDuration(a));
 }
 
 function sortByPrice(waypoints) {
